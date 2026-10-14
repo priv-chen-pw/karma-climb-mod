@@ -50,6 +50,11 @@ with `preferPositive: true` appends exactly there.
 | [EclipseMenuMedals.cs](KarmaClimb/EclipseMenuMedals.cs) | Medals for 9-16, cloned from Eclipse 1-8 art and tinted cyan |
 | [EclipseMenuKarmaSection.cs](KarmaClimb/EclipseMenuKarmaSection.cs) | "Karma" heading, hint line and hoverable per-level badges |
 | [KarmaDescriptions.cs](KarmaClimb/KarmaDescriptions.cs) | Karma level tooltip text |
+| [KarmaDescriptionPanel.cs](KarmaClimb/KarmaDescriptionPanel.cs) | Left-hand description panel, cloned from the menu's own |
+| [KarmaBadgeHover.cs](KarmaClimb/KarmaBadgeHover.cs) | Drives that panel while a badge is hovered |
+| [EclipseMedalNumbers.cs](KarmaClimb/EclipseMedalNumbers.cs) | Draws 9-16 on the new medals, whose numerals are not in any sprite |
+| [EclipseMenuLayout.cs](KarmaClimb/EclipseMenuLayout.cs) | Widens the right column, frees the description height |
+| [EclipseMenuEscape.cs](KarmaClimb/EclipseMenuEscape.cs) | Escape leaves the Eclipse menu |
 | [EclipseMenuDump.cs](KarmaClimb/EclipseMenuDump.cs) | Optional one-shot dump of the Eclipse menu tree |
 
 Two details worth knowing before changing this code:
@@ -64,12 +69,26 @@ Two details worth knowing before changing this code:
 
 ## Known gaps
 
-- **Karma section placement is a first pass.** It is parented as the next sibling of the medal row, which
-  lands under the medals if that container is a vertical layout. Enable the `LogEclipseMenuHierarchy`
-  config option to dump the real tree and adjust from there.
+- **Eclipse menu layout.** The relevant tree is
+  `EclipseRunMenu/Main Panel/RightPanel/MedalPanel`, a `VerticalLayoutGroup` whose `HorizontalLayout`
+  child holds the eight vanilla medals. We append a second `KarmaClimbMedalRow` for 9-16 (sixteen in one
+  row is too cramped) and then the `KarmaClimbKarmaSection` as the last child. Enable the
+  `LogEclipseMenuHierarchy` config option to re-dump the tree if the menu changes in a game patch.
 - **Difficulty carousel ordering.** R2API sorts difficulty rule choices by `scalingValue`, and every
   Eclipse level (plus Monsoon) uses `3f`, so ties sort unpredictably. Cosmetic only: Eclipse runs force
   the difficulty rather than picking it from the carousel.
 - **Karma unlock requirements.** `Karma.InitialLevel.N` choices carry a `requiredUnlockable`
   (`Karma.StartingKarma.N`). Forcing bypasses the mask, and vanilla Eclipse already forces these same
   choices, but it is worth confirming on a profile that has not unlocked Karma yet.
+
+## Eclipse menu notes
+
+- **Medal refresh timing.** `EclipseDifficultyMedalDisplay.OnEnable` calls `Refresh()` during
+  `Instantiate`, i.e. before a clone's `eclipseLevel` is assigned, and vanilla then only refreshes on a
+  survivor preference change. We refresh every medal from `EclipseRunScreenController.UpdateDisplayedSurvivor`,
+  which fires both on menu entry and on each survivor change.
+- **Tuning the description panel.** `KarmaDescriptionPanel.LeftMargin` and `PanelWidth` set its position
+  and width. The right column's width is the `RightPanelExtraWidth` config option.
+- **Medal numerals are baked into the sprites**, and there is no vanilla art above Eclipse 8. Medals 9-16
+  therefore drop the ring art for a plain tinted circle (`texCircle256Aliased`) with the number drawn on
+  top, which also keeps them visually distinct from the Eclipse medals.

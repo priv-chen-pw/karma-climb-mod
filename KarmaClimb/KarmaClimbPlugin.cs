@@ -13,7 +13,7 @@ namespace KarmaClimb
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     public class KarmaClimbPlugin : BaseUnityPlugin
     {
-        public const string PluginAuthor = "adamswiderski";
+        public const string PluginAuthor = "priv-chen-pw";
         public const string PluginName = "KarmaClimb";
         public const string PluginGuid = PluginAuthor + "." + PluginName;
         public const string PluginVersion = "0.1.0";
@@ -34,10 +34,16 @@ namespace KarmaClimb
             // Eclipse menu presentation.
             EclipseMenuMedals.Init();
             EclipseMenuKarmaSection.Init();
+            EclipseMenuLayout.Init(Config.Bind(
+                "Eclipse menu",
+                "RightPanelExtraWidth",
+                260f,
+                "Pixels to widen the Eclipse menu's right-hand column by, growing leftwards. 0 disables.").Value);
+            EclipseMenuEscape.Init();
             EclipseMenuDump.Init(Config.Bind(
                 "Debug",
                 "LogEclipseMenuHierarchy",
-                true,
+                false,
                 "Logs the Eclipse menu's transform tree once, to position the Karma section against the real hierarchy. Turn off when the layout is settled.").Value);
 
             Log.Info($"{PluginName} {PluginVersion} ready: Eclipse now climbs to {KarmaClimbLadder.MaxLevel}.");

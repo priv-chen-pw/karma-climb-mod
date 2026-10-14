@@ -15,6 +15,14 @@ namespace KarmaClimb
     /// </summary>
     internal static class EclipseMenuKarmaSection
     {
+        internal const string BadgeRowName = "KarmaBadgeRow";
+
+        /// <summary>Gap between the hint line and the badge row, which otherwise overlapped it.</summary>
+        private const int HintToBadgeGap = 18;
+
+        /// <summary>The badges sat high with dead space beneath, so weight the padding downward.</summary>
+        private const int BadgeRowBottomPadding = 6;
+
         internal static void Init()
         {
             On.RoR2.UI.EclipseRunScreenController.Awake += (orig, self) =>
@@ -46,21 +54,26 @@ namespace KarmaClimb
                 return;
             }
 
-            // Sit as the next sibling of the medal row, so in a vertical layout we land under the medals.
+            // medalRow.parent is MedalPanel, a VerticalLayoutGroup holding the medal rows. Going last
+            // puts the Karma block under every medal row, including the second one we add for 9-16.
             GameObject section = new GameObject("KarmaClimbKarmaSection", typeof(RectTransform));
             section.transform.SetParent(medalRow.parent, worldPositionStays: false);
-            section.transform.SetSiblingIndex(medalRow.GetSiblingIndex() + 1);
+            section.transform.SetAsLastSibling();
 
             VerticalLayoutGroup layout = section.AddComponent<VerticalLayoutGroup>();
             layout.childControlWidth = true;
             layout.childControlHeight = true;
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
-            layout.spacing = 4f;
+            layout.spacing = HintToBadgeGap;
+            layout.padding = new RectOffset(0, 0, HintToBadgeGap, BadgeRowBottomPadding);
+            layout.childAlignment = TextAnchor.MiddleCenter;
 
             AddText(controller.eclipseDifficultyName, section.transform, "KarmaHeading", KarmaDescriptions.HeadingToken);
             AddText(controller.eclipseDifficultyDescription, section.transform, "KarmaHint", KarmaDescriptions.HintToken);
-            AddBadgeRow(section.transform, medal);
+
+            LanguageTextMeshController panelText = KarmaDescriptionPanel.Build(controller, out GameObject panel);
+            AddBadgeRow(section.transform, medal, panelText, panel);
 
             Log.Info("Built the Karma section in the Eclipse menu.");
         }
@@ -78,9 +91,13 @@ namespace KarmaClimb
             clone.token = token;
         }
 
-        private static void AddBadgeRow(Transform parent, EclipseDifficultyMedalDisplay medalTemplate)
+        private static void AddBadgeRow(
+            Transform parent,
+            EclipseDifficultyMedalDisplay medalTemplate,
+            LanguageTextMeshController panelText,
+            GameObject panel)
         {
-            GameObject row = new GameObject("KarmaBadgeRow", typeof(RectTransform));
+            GameObject row = new GameObject(BadgeRowName, typeof(RectTransform));
             row.transform.SetParent(parent, worldPositionStays: false);
 
             HorizontalLayoutGroup layout = row.AddComponent<HorizontalLayoutGroup>();
@@ -89,6 +106,16 @@ namespace KarmaClimb
             layout.childForceExpandWidth = false;
             layout.childForceExpandHeight = false;
             layout.spacing = 4f;
+
+            // Without an explicit height the row collapsed and the badges drew over the hint text.
+            RectTransform medalRect = medalTemplate.GetComponent<RectTransform>();
+            float badgeHeight = medalRect ? medalRect.rect.height : 0f;
+            if (badgeHeight > 0f)
+            {
+                LayoutElement rowSize = row.AddComponent<LayoutElement>();
+                rowSize.minHeight = badgeHeight;
+                rowSize.preferredHeight = badgeHeight;
+            }
 
             for (int karma = 1; karma <= KarmaClimbLadder.AddedLevelCount; karma++)
             {
@@ -121,15 +148,27 @@ namespace KarmaClimb
                     image.raycastTarget = true;
                 }
 
-                TooltipProvider tooltip = badge.GetComponent<TooltipProvider>();
-                if (!tooltip)
+                if (panelText)
                 {
-                    tooltip = badge.AddComponent<TooltipProvider>();
+                    // Preferred: drive the standalone panel on the left of the screen.
+                    KarmaBadgeHover hover = badge.AddComponent<KarmaBadgeHover>();
+                    hover.karmaLevel = karma;
+                    hover.target = panelText;
+                    hover.panel = panel;
                 }
+                else
+                {
+                    // Fall back to a normal cursor tooltip if the panel could not be built.
+                    TooltipProvider tooltip = badge.GetComponent<TooltipProvider>();
+                    if (!tooltip)
+                    {
+                        tooltip = badge.AddComponent<TooltipProvider>();
+                    }
 
-                tooltip.titleToken = KarmaDescriptions.TitleToken(karma);
-                tooltip.titleColor = ColorCatalog.GetColor(ColorCatalog.ColorIndex.LunarItem);
-                tooltip.bodyToken = KarmaDescriptions.BodyToken(karma);
+                    tooltip.titleToken = KarmaDescriptions.TitleToken(karma);
+                    tooltip.titleColor = ColorCatalog.GetColor(ColorCatalog.ColorIndex.LunarItem);
+                    tooltip.bodyToken = KarmaDescriptions.BodyToken(karma);
+                }
             }
         }
 
