@@ -21,19 +21,6 @@ Climb all the way to **Eclipse 16**, where every new level after 8 adds a level 
 * Eclipse 9–16 show their own badge in character select and during the run.
 * The new levels stay out of the normal lobby's difficulty picker, just like vanilla Eclipse.
 
-## Compatibility
-
-* Works alongside mods that add their own difficulties.
-* Mods that also change the Eclipse ladder (more levels, different unlocks) will most likely conflict.
-* **Multiplayer** follows vanilla Eclipse rules: the lobby plays the **lowest** Eclipse level among everyone's chosen survivors, and only players who haven't beaten that level yet move up.
-  * Everyone in the lobby needs Karma Climb, on the same version.
-
-## Configuration
-
-In `BepInEx\config\chen-ror2.KarmaClimb.cfg`:
-
-* `RightPanelExtraWidth` (default `260`): how much wider the Eclipse menu's right-hand column is. Set it to `0` for the vanilla width.
-
 ## Credits
 
 * Karma level details from the [Risk of Rain 2 Wiki](https://riskofrain2.wiki.gg/wiki/Karma)
