@@ -1,39 +1,25 @@
 # Karma Climb
 
-Eclipse doesn't stop at 8 anymore! Climb all the way to **Eclipse 16**, where every new level stacks Mithrix's **Karma** on top of the full Eclipse 8 challenge.
+Climb all the way to **Eclipse 16**, where every new level after 8 adds a level of Karma.
 
 ## Changes from Vanilla
 
 * **Eclipse now goes up to 16**
-  * Eclipse 9–16 keep **all eight Eclipse modifiers** and add a **Karma** level:
-    * Eclipse 9 = Karma 1, Eclipse 10 = Karma 2, … all the way to Eclipse 16 = Karma 8
-  * **Karma is locked for the whole run.** It starts at the level's Karma and never goes up (Karma triggers give nothing during Eclipse).
+  * Eclipse 9–16 keep **all eight Eclipse modifiers** and add a **Karma** level.<img width="1916" height="1074" alt="image" src="https://github.com/user-attachments/assets/35827b97-dbbb-4d3c-be92-e7dce1193908" />
+
+  * **Karma is locked for the whole run.**.<img width="850" height="879" alt="image" src="https://github.com/user-attachments/assets/be12cfbc-82bd-423c-ad99-5182fa0e461a" />
+
   * Unlocked just like vanilla Eclipse: beat Eclipse 8 with a survivor to unlock Eclipse 9 for them, beat 9 to unlock 10, and so on.
 * **Eclipse 1–8 no longer include Karma**
-  * In vanilla, Eclipse 3 also forces Karma 3, and so on. Here you climb Karma once, on Eclipse 9–16, instead of twice.
 * **Eclipse menu**
-  * A second row of medals for Eclipse 9–16: greyed out until earned, Karma blue once you've beaten them.
-  * New **Karma** box: hover a Karma badge to see exactly what that level does to Mithrix.
+  * A second row of medals for Eclipse 9–16.<img width="884" height="203" alt="image" src="https://github.com/user-attachments/assets/2bdbb671-cdf9-46d9-84f7-f4a3433a9b4a" />
+
+  * New **Karma** box: hover a Karma badge to see exactly what that level does to Mithrix.<img width="869" height="781" alt="image" src="https://github.com/user-attachments/assets/4931150c-29e5-4090-a037-be2a0041bb45" />
+
   * The menu is a bit wider, and the difficulty description grows to fit the longer Eclipse 9–16 text.
-  * **Escape** takes you back out of the menu.
+  * Pressing **Escape** button takes you back to the main menu.
 * Eclipse 9–16 show their own badge in character select and during the run.
 * The new levels stay out of the normal lobby's difficulty picker, just like vanilla Eclipse.
-
-## What does Karma do?
-
-Karma makes **Mithrix** nastier. Every level keeps everything from the levels before it:
-
-* **Every level:** Mithrix deals +1% damage per Karma level
-* **Karma 2+:** Mithrix moves and attacks 30% faster
-* **Karma 6+:** Mithrix's skill cooldowns are halved
-* **Karma 8:** Mithrix has 50% more health
-* On top of that, almost every level gives him new attacks and arena hazards. Hover the Karma badges in the Eclipse menu for the full list!
-
-## Installation
-
-Install with **r2modman** or the **Thunderstore Mod Manager**. Everything it needs is installed automatically.
-
-Installing by hand? Drop the `KarmaClimb` folder into `BepInEx\plugins\`. You'll also need R2API (Core, Difficulty and Language) and HookGenPatcher.
 
 ## Compatibility
 
@@ -49,7 +35,6 @@ In `BepInEx\config\priv-chen-pw.KarmaClimb.cfg`:
 
 ## Credits
 
-* Made by priv-chen-pw
 * Karma level details from the [Risk of Rain 2 Wiki](https://riskofrain2.wiki.gg/wiki/Karma)
 
 ## Bugs & Feedback
