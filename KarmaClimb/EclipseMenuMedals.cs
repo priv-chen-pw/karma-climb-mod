@@ -1,37 +1,20 @@
-using System.Collections.Generic;
 using RoR2.UI;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace KarmaClimb
 {
     /// <summary>
-    /// Adds medals for Eclipse 9-16 to the Eclipse menu and recolours them.
+    /// Adds medals for Eclipse 9-16 to the Eclipse menu.
     ///
     /// Vanilla ships one <see cref="EclipseDifficultyMedalDisplay"/> object per level with a serialized
-    /// <c>eclipseLevel</c>, so there are exactly eight and nothing grows the row automatically. Each new
-    /// medal is cloned from the vanilla medal whose level equals its Karma level, so Eclipse 9 reuses the
-    /// Eclipse 1 artwork, 10 reuses 2, and so on - the row visually mirrors the Karma climb.
-    ///
-    /// The filled states are then tinted cyan to separate them from the gold Eclipse medals. Tinting is
-    /// applied to the non-gold sprite: multiplying cyan into the gold artwork would cancel its red
-    /// channel and come out muddy.
+    /// <c>eclipseLevel</c>, so there are exactly eight and nothing grows the row. Each new medal is a clone
+    /// of the Eclipse 8 medal with its three state sprites swapped for our art (unearned shows the
+    /// Inactive medal, either earned state the Active one), so vanilla's own Refresh switches between
+    /// them exactly as it does for Eclipse 1-8.
     /// </summary>
     internal static class EclipseMenuMedals
     {
-        /// <summary>Earned by every survivor. Cyan, in the tone of the Karma icon.</summary>
-        private static readonly Color CompleteColor = new Color32(125, 240, 255, 255);
-
-        /// <summary>Earned by this survivor but not all of them.</summary>
-        private static readonly Color IncompleteColor = new Color32(62, 136, 156, 255);
-
-        /// <summary>Not yet reached. Dark, matching the unearned Eclipse medals.</summary>
-        private static readonly Color UnearnedColor = new Color32(26, 36, 48, 255);
-
-        private static readonly Color EarnedNumberColor = new Color32(12, 28, 38, 255);
-        private static readonly Color UnearnedNumberColor = new Color32(86, 102, 118, 255);
-
         internal static void Init()
         {
             On.RoR2.UI.EclipseRunScreenController.Awake += (orig, self) =>
@@ -40,18 +23,12 @@ namespace KarmaClimb
                 AddMedals(self);
             };
 
-            On.EclipseDifficultyMedalDisplay.Refresh += (orig, self) =>
-            {
-                orig(self);
-                Recolour(self);
-            };
-
             // A medal's OnEnable calls Refresh during Instantiate, which for our clones happens before
-            // we assign eclipseLevel - so they paint themselves as levels 1-8 and never correct
-            // themselves. Vanilla only refreshes again on a survivor preference change, which is why
-            // the row looked wrong until you switched character. UpdateDisplayedSurvivor runs both when
-            // the menu discovers its event system and on every survivor change, so refreshing here
-            // covers menu entry and switching alike.
+            // we assign eclipseLevel - so they paint themselves as the template's level and never correct
+            // themselves. Vanilla only refreshes again on a survivor preference change, which is why the
+            // row looked wrong until you switched character. UpdateDisplayedSurvivor runs both when the
+            // menu discovers its event system and on every survivor change, so refreshing here covers
+            // menu entry and switching alike.
             On.RoR2.UI.EclipseRunScreenController.UpdateDisplayedSurvivor += (orig, self) =>
             {
                 orig(self);
@@ -69,7 +46,7 @@ namespace KarmaClimb
                 // The Karma badges are clones of a medal whose display component is destroyed, but the
                 // destroy is deferred a frame - don't let a refresh repaint them in the meantime.
                 Transform parent = display.transform.parent;
-                if (parent && parent.name == EclipseMenuKarmaSection.BadgeRowName)
+                if (parent && parent.name == EclipseMenuKarmaPanel.BadgeRowName)
                 {
                     continue;
                 }
@@ -80,13 +57,10 @@ namespace KarmaClimb
 
         private static void AddMedals(EclipseRunScreenController controller)
         {
-            EclipseDifficultyMedalDisplay[] existing =
-                controller.GetComponentsInChildren<EclipseDifficultyMedalDisplay>(includeInactive: true);
+            EclipseDifficultyMedalDisplay template = null;
 
-            Dictionary<int, EclipseDifficultyMedalDisplay> vanillaByLevel =
-                new Dictionary<int, EclipseDifficultyMedalDisplay>();
-
-            foreach (EclipseDifficultyMedalDisplay display in existing)
+            foreach (EclipseDifficultyMedalDisplay display in
+                controller.GetComponentsInChildren<EclipseDifficultyMedalDisplay>(includeInactive: true))
             {
                 if (display.eclipseLevel > KarmaClimbLadder.VanillaMaxLevel)
                 {
@@ -94,40 +68,46 @@ namespace KarmaClimb
                     return;
                 }
 
-                if (display.eclipseLevel >= 1)
+                if (!template || display.eclipseLevel > template.eclipseLevel)
                 {
-                    vanillaByLevel[display.eclipseLevel] = display;
+                    template = display;
                 }
             }
 
-            if (vanillaByLevel.Count == 0)
+            if (!template)
             {
                 Log.Warning("Eclipse menu has no medal displays; levels 9-16 will have no medals.");
                 return;
             }
 
+            Transform secondRow = CreateSecondRow(template.transform.parent);
             int added = 0;
-            Transform secondRow = null;
 
             for (int level = KarmaClimbLadder.VanillaMaxLevel + 1; level <= KarmaClimbLadder.MaxLevel; level++)
             {
-                int karma = KarmaClimbLadder.KarmaLevelFor(level);
+                Sprite active = KarmaClimbMedalArt.Active(level);
+                Sprite inactive = KarmaClimbMedalArt.Inactive(level);
 
-                if (!vanillaByLevel.TryGetValue(karma, out EclipseDifficultyMedalDisplay template))
+                if (!active || !inactive)
                 {
-                    Log.Warning($"No vanilla medal for Eclipse {karma}; skipping the medal for Eclipse {level}.");
+                    Log.Warning($"Missing medal art for Eclipse {level}; skipping its medal.");
                     continue;
-                }
-
-                if (!secondRow)
-                {
-                    secondRow = CreateSecondRow(template.transform.parent);
                 }
 
                 GameObject clone = Object.Instantiate(template.gameObject, secondRow);
                 clone.name = $"KarmaClimbMedal{level}";
-                clone.GetComponent<EclipseDifficultyMedalDisplay>().eclipseLevel = level;
-                EclipseMedalNumbers.AddLabel(clone, level, controller.eclipseDifficultyName);
+
+                EclipseDifficultyMedalDisplay display = clone.GetComponent<EclipseDifficultyMedalDisplay>();
+                display.eclipseLevel = level;
+                display.unearnedSprite = inactive;
+                display.incompleteSprite = active;
+                display.completeSprite = active;
+
+                if (display.iconImage)
+                {
+                    display.iconImage.color = Color.white;
+                }
+
                 added++;
             }
 
@@ -163,38 +143,6 @@ namespace KarmaClimb
             }
 
             return row.transform;
-        }
-
-        private static void Recolour(EclipseDifficultyMedalDisplay display)
-        {
-            if (display.eclipseLevel <= KarmaClimbLadder.VanillaMaxLevel)
-            {
-                return;
-            }
-
-            Image image = display.iconImage;
-            if (!image)
-            {
-                return;
-            }
-
-            // Refresh has just assigned one of the three sprites, so read the state before replacing it.
-            bool unearned = image.sprite == display.unearnedSprite;
-            bool earnedByEveryone = image.sprite == display.completeSprite;
-
-            Sprite circle = EclipseMedalNumbers.CircleSprite;
-            if (circle)
-            {
-                image.sprite = circle;
-            }
-
-            image.color = unearned ? UnearnedColor : earnedByEveryone ? CompleteColor : IncompleteColor;
-
-            TMP_Text label = EclipseMedalNumbers.FindLabel(display.gameObject);
-            if (label)
-            {
-                label.color = unearned ? UnearnedNumberColor : EarnedNumberColor;
-            }
         }
     }
 }

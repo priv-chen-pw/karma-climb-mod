@@ -47,6 +47,22 @@ namespace KarmaClimb
         {
             sb.Append(' ', depth * 2).Append("- ").Append(transform.name);
 
+            // Sizes and layout overrides, so layout problems can be reasoned about from the log.
+            RectTransform rect = transform as RectTransform;
+            if (rect)
+            {
+                sb.Append("  rect=").Append(Mathf.Round(rect.rect.width)).Append('x').Append(Mathf.Round(rect.rect.height));
+            }
+
+            UnityEngine.UI.LayoutElement layoutElement = transform.GetComponent<UnityEngine.UI.LayoutElement>();
+            if (layoutElement)
+            {
+                sb.Append("  LE(min=").Append(layoutElement.minHeight)
+                  .Append(",pref=").Append(layoutElement.preferredHeight)
+                  .Append(",flex=").Append(layoutElement.flexibleHeight)
+                  .Append(",ignore=").Append(layoutElement.ignoreLayout).Append(')');
+            }
+
             Component[] components = transform.GetComponents<Component>();
             if (components.Length > 0)
             {

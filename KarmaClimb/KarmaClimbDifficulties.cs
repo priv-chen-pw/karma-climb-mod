@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using R2API;
 using RoR2;
+using UnityEngine;
 
 namespace KarmaClimb
 {
@@ -34,9 +35,24 @@ namespace KarmaClimb
                     serverTag: "mn",
                     countsAsHardMode: true);
 
+                // The level's own medal as its icon, so character select and the run HUD show 9-16 rather
+                // than the Eclipse 8 icon named by iconPath. R2API's AddDifficulty(def, sprite) overload
+                // would do this too, but it hard-codes preferPositive: false, which would put us at a
+                // negative index below Easy and lose every Eclipse modifier. So set what it sets ourselves.
+                Sprite icon = KarmaClimbMedalArt.Active(level);
+                if (icon)
+                {
+                    def.iconSprite = icon;
+                    def.foundIconSprite = true;
+                }
+
                 // preferPositive is the whole trick: it appends after Eclipse8 so that every
                 // "selectedDifficulty >= EclipseN" check in the game passes.
-                DifficultyIndex index = DifficultyAPI.AddDifficulty(def, preferPositive: true);
+                //
+                // hidden keeps it out of the normal lobby's difficulty picker - R2API turns it into
+                // excludeByDefault, which is how vanilla hides Eclipse 1-8 there too. EclipseRun still
+                // forces it, as it forces the vanilla Eclipse levels.
+                DifficultyIndex index = DifficultyAPI.AddDifficulty(def, preferPositive: true, hidden: true);
 
                 if (index == DifficultyIndex.Invalid)
                 {

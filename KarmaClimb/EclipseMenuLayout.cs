@@ -27,7 +27,7 @@ namespace KarmaClimb
         private static void Apply(EclipseRunScreenController controller)
         {
             Widen(controller);
-            FreeDescriptionHeight(controller);
+            FreeHeights(controller);
         }
 
         /// <summary>Grows the right column leftwards, keeping its right edge where it is.</summary>
@@ -64,11 +64,20 @@ namespace KarmaClimb
         }
 
         /// <summary>
-        /// Clears the fixed heights on the description and on the InfoPanel holding it, so both size to
-        /// the text. Freeing only the description was not enough: its container stayed fixed and the
-        /// text simply overflowed the border.
+        /// Stops the panels overlapping each other.
+        ///
+        /// RightPanel stacks HeaderContainer, MedalPanel and InfoPanel in a VerticalLayoutGroup, and
+        /// each carries a LayoutElement with a height authored for vanilla's contents. MedalPanel was
+        /// sized for one medal row, so our second row and the Karma section rendered outside its
+        /// allocation - spilling up into the survivor grid and down into the info box - and the longer
+        /// 9-16 description overflowed InfoPanel the same way.
+        ///
+        /// Releasing those fixed heights lets the layout group allocate what the contents actually need.
+        /// A ContentSizeFitter then grows the column itself, which is only legal on RightPanel because
+        /// its parent ("Main Panel") has no layout group of its own - putting one on a layout group's
+        /// child is what makes Unity layouts overlap.
         /// </summary>
-        private static void FreeDescriptionHeight(EclipseRunScreenController controller)
+        private static void FreeHeights(EclipseRunScreenController controller)
         {
             LanguageTextMeshController description = controller.eclipseDifficultyDescription;
             if (!description)
@@ -79,28 +88,93 @@ namespace KarmaClimb
             Release(description.GetComponent<LayoutElement>());
 
             Transform infoPanel = description.transform.parent;
-            if (!infoPanel)
+            Transform rightPanel = controller.transform.Find("Main Panel/RightPanel");
+
+            if (infoPanel)
+            {
+                Release(infoPanel.GetComponent<LayoutElement>());
+                SizeToChildren(infoPanel.GetComponent<VerticalLayoutGroup>());
+
+                // Added in an earlier pass; on a layout group's child it causes exactly the overlap
+                // it was meant to fix.
+                ContentSizeFitter strayFitter = infoPanel.GetComponent<ContentSizeFitter>();
+                if (strayFitter)
+                {
+                    Object.Destroy(strayFitter);
+                }
+            }
+
+            if (!rightPanel)
             {
                 return;
             }
 
-            Release(infoPanel.GetComponent<LayoutElement>());
-
-            VerticalLayoutGroup layout = infoPanel.GetComponent<VerticalLayoutGroup>();
-            if (layout)
+            foreach (Transform child in rightPanel)
             {
-                layout.childControlHeight = true;
-                layout.childForceExpandHeight = false;
+                // Border images are backdrops and must keep stretching behind the content.
+                if (child.name.Contains("Border") || child.name.Contains("Blur"))
+                {
+                    continue;
+                }
+
+                Release(child.GetComponent<LayoutElement>());
+                SizeToChildren(child.GetComponent<VerticalLayoutGroup>());
             }
 
-            ContentSizeFitter fitter = infoPanel.GetComponent<ContentSizeFitter>();
+            VerticalLayoutGroup column = rightPanel.GetComponent<VerticalLayoutGroup>();
+            SizeToChildren(column);
+
+            if (column)
+            {
+                // Without this the stacked panels keep their own widths, so widening the column left
+                // them ragged and differently sized rather than filling it.
+                column.childControlWidth = true;
+                column.childForceExpandWidth = true;
+            }
+
+            PinTopEdge(rightPanel as RectTransform);
+
+            ContentSizeFitter fitter = rightPanel.GetComponent<ContentSizeFitter>();
             if (!fitter)
             {
-                fitter = infoPanel.gameObject.AddComponent<ContentSizeFitter>();
+                fitter = rightPanel.gameObject.AddComponent<ContentSizeFitter>();
             }
 
             fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        }
+
+        /// <summary>
+        /// Moves the pivot to the top edge without moving the panel. A ContentSizeFitter grows a rect
+        /// around its pivot, so with a centred pivot the column grew upward and downward at once; pinned
+        /// at the top it keeps vanilla's top edge and only grows down.
+        /// </summary>
+        private static void PinTopEdge(RectTransform rect)
+        {
+            if (!rect || Mathf.Approximately(rect.pivot.y, 1f))
+            {
+                return;
+            }
+
+            Vector3[] corners = new Vector3[4];
+            rect.GetWorldCorners(corners);
+            float topBefore = corners[1].y;
+
+            rect.pivot = new Vector2(rect.pivot.x, 1f);
+
+            rect.GetWorldCorners(corners);
+            rect.position += new Vector3(0f, topBefore - corners[1].y, 0f);
+        }
+
+        private static void SizeToChildren(VerticalLayoutGroup layout)
+        {
+            if (!layout)
+            {
+                return;
+            }
+
+            layout.childControlHeight = true;
+            layout.childForceExpandHeight = false;
         }
 
         /// <summary>-1 means "no override", handing sizing back to the content.</summary>

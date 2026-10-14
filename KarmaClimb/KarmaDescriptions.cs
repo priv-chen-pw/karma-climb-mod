@@ -19,9 +19,6 @@ namespace KarmaClimb
 
         internal static string BodyToken(int karmaLevel) => $"KARMACLIMB_KARMA_{karmaLevel}_BODY";
 
-        /// <summary>Title and body together, for the single-text description panel.</summary>
-        internal static string PanelToken(int karmaLevel) => $"KARMACLIMB_KARMA_{karmaLevel}_PANEL";
-
         /// <summary>Indexed by Karma level, so index 0 is unused.</summary>
         private static readonly string[] Bodies =
         {
@@ -75,10 +72,8 @@ namespace KarmaClimb
 
             for (int karma = 1; karma <= KarmaClimbLadder.AddedLevelCount; karma++)
             {
-                string body = BuildBody(karma);
                 LanguageAPI.Add(TitleToken(karma), $"Karma {karma}");
-                LanguageAPI.Add(BodyToken(karma), body);
-                LanguageAPI.Add(PanelToken(karma), $"<style=cIsUtility>Karma {karma}</style>\n\n{body}");
+                LanguageAPI.Add(BodyToken(karma), BuildBody(karma));
             }
         }
 

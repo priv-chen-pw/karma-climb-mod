@@ -1,9 +1,11 @@
 {
   "name": "KarmaClimb",
   "version_number": "0.1.0",
-  "website_url": "",
-  "description": "Extends Eclipse from 8 to 16 levels. Levels 9-16 keep every Eclipse 8 modifier and add Karma 1-8.",
+  "website_url": "https://github.com/priv-chen-pw/karma-climb-mod",
+  "description": "Eclipse goes up to 16! Eclipse 9-16 keep every Eclipse 8 modifier and add Mithrix's Karma 1-8, locked for the whole run. Adds new medals and a Karma guide to the Eclipse menu.",
   "dependencies": [
+    "bbepis-BepInExPack-5.4.2122",
+    "RiskofThunder-HookGenPatcher-1.2.9",
     "RiskofThunder-R2API_Core-5.3.0",
     "RiskofThunder-R2API_Difficulty-1.1.2",
     "RiskofThunder-R2API_Language-1.1.0"

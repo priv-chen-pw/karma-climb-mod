@@ -30,10 +30,11 @@ namespace KarmaClimb
             KarmaClimbDifficulties.Register();
             KarmaClimbUnlockables.Init();
             EclipseLadderHooks.Init();
+            EclipseKarmaLock.Init();
 
             // Eclipse menu presentation.
             EclipseMenuMedals.Init();
-            EclipseMenuKarmaSection.Init();
+            EclipseMenuKarmaPanel.Init();
             EclipseMenuLayout.Init(Config.Bind(
                 "Eclipse menu",
                 "RightPanelExtraWidth",

@@ -24,6 +24,16 @@ namespace KarmaClimb
 
         internal static void Register()
         {
+            // The Eclipse menu's left paragraph. Vanilla says "a maximum of 8 times".
+            LanguageAPI.Add(
+                "ECLIPSE_GAMEMODE_DESCRIPTION",
+                "<style=cIsUtility>Eclipse</style> is a gamemode that adds stacking challenge modifiers to your run.\n\n" +
+                "Each time you <style=cIsUtility>beat the game</style>, your Eclipse level <style=cIsUtility>permanently increases</style> " +
+                $"with that Survivor, up to a maximum of <style=cIsUtility>{KarmaClimbLadder.MaxLevel}</style> times.\n\n" +
+                $"Levels <style=cIsUtility>{KarmaClimbLadder.VanillaMaxLevel + 1}-{KarmaClimbLadder.MaxLevel}</style> keep every " +
+                $"Eclipse {KarmaClimbLadder.VanillaMaxLevel} modifier and add <style=cIsUtility>Karma</style>, " +
+                "which stays <style=cIsUtility>locked at its starting level</style> for the whole run.");
+
             for (int level = KarmaClimbLadder.VanillaMaxLevel + 1; level <= KarmaClimbLadder.MaxLevel; level++)
             {
                 int karma = KarmaClimbLadder.KarmaLevelFor(level);
@@ -44,8 +54,9 @@ namespace KarmaClimb
                 sb.Append("\n<mspace=0.5em>(").Append(i + 1).Append(")</mspace> ").Append(InheritedEffects[i]).Append(' ');
             }
 
-            // The one thing that actually changes across 9-16.
-            sb.Append("\n<mspace=0.5em>(").Append(level).Append(")</mspace> Starting Karma: <style=cIsHealth>")
+            // The one thing that actually changes across 9-16. Karma cannot rise during an Eclipse run
+            // (see EclipseKarmaLock), so this is the Karma for the whole run, not just its start.
+            sb.Append("\n<mspace=0.5em>(").Append(level).Append(")</mspace> Karma: <style=cIsHealth>locked at ")
               .Append(karma).Append("</style></style>");
 
             return sb.ToString();
