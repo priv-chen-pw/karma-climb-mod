@@ -111,6 +111,18 @@ Two details worth knowing before changing this code:
 - **Difficulty carousel ordering.** R2API sorts difficulty rule choices by `scalingValue`, and every
   Eclipse level (plus Monsoon) uses `3f`, so ties sort unpredictably. Cosmetic only: the new levels are
   hidden from the normal lobby, and Eclipse runs force the difficulty rather than picking it.
-- **Karma unlock requirements.** `Karma.InitialLevel.N` choices carry a `requiredUnlockable`
-  (`Karma.StartingKarma.N`). Forcing bypasses the mask, and vanilla Eclipse already forces these same
-  choices, but it is worth confirming on a profile that has not unlocked Karma yet.
+
+## Verified behaviour
+
+- **Karma unlock requirements don't block the climb.** `Karma.InitialLevel.N` choices carry a
+  `requiredUnlockable` (`Karma.StartingKarma.N`), but `PreGameController.ResolveChoiceMask` computes
+  `forced || (!excluded && unlocked && entitled && ...)`, so a forced choice is always available - even on
+  a profile that never unlocked Karma, and even though our difficulties are `excludeByDefault`.
+- **Game completion % is unaffected.** `GameCompletionStatsHelper` only counts skill-variant, skin,
+  monster-log and achievement unlockables; Eclipse unlockables (vanilla or ours) are none of these.
+- **Steam rich presence** shows "Hard" for any `countsAsHardMode` difficulty, which ours are.
+- **Multiplayer** is vanilla Eclipse logic: `OverrideRuleChoices` runs on the host inside
+  `ResolveChoiceMask` and takes the minimum next level across all `NetworkUser`s; `OnClientGameOver`
+  grants each local player the next level, and `GrantUnlockable` ignores ones already owned. The plugin
+  declares `EveryoneMustHaveMod` + `EveryoneNeedSameModVersion`, because the added rule choices and
+  unlockables are networked by index.

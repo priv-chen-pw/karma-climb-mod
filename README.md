@@ -7,7 +7,7 @@ Climb all the way to **Eclipse 16**, where every new level after 8 adds a level 
 * **Eclipse now goes up to 16**
   * Eclipse 9–16 keep **all eight Eclipse modifiers** and add a **Karma** level.<img width="1916" height="1074" alt="image" src="https://github.com/user-attachments/assets/35827b97-dbbb-4d3c-be92-e7dce1193908" />
 
-  * **Karma is locked for the whole run.**.<img width="850" height="879" alt="image" src="https://github.com/user-attachments/assets/be12cfbc-82bd-423c-ad99-5182fa0e461a" />
+  * **Karma is locked for the whole run.**<img width="850" height="879" alt="image" src="https://github.com/user-attachments/assets/be12cfbc-82bd-423c-ad99-5182fa0e461a" />
 
   * Unlocked just like vanilla Eclipse: beat Eclipse 8 with a survivor to unlock Eclipse 9 for them, beat 9 to unlock 10, and so on.
 * **Eclipse 1–8 no longer include Karma**

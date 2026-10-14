@@ -21,7 +21,7 @@ namespace KarmaClimb
         public const string PluginAuthor = "chen-ror2";
         public const string PluginName = "KarmaClimb";
         public const string PluginGuid = PluginAuthor + "." + PluginName;
-        public const string PluginVersion = "0.1.0";
+        public const string PluginVersion = "1.0.0";
 
         public void Awake()
         {
