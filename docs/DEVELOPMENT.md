@@ -30,6 +30,21 @@ The build drops `KarmaClimb.dll` straight into
 so launching that profile from r2modman picks up the latest build. The copy step is
 skipped if the profile folder is missing, so the project still builds elsewhere.
 
+### Releasing
+
+```
+dotnet build KarmaClimb.sln -c Release
+```
+
+A Release build also writes the upload-ready Thunderstore package to `artifacts/KarmaClimb-<version>.zip`:
+the dll, `manifest.json`, `icon.png`, `README.md` and `CHANGELOG.md`, flat at the zip root. It fails if
+`Version` in the csproj, `version_number` in the manifest and `PluginVersion` in the code disagree, since
+Thunderstore never accepts the same version twice. Bump all three together.
+
+Importing that zip into r2modman (Settings → Import local mod) installs the mod but **not** its
+dependencies — r2modman only resolves dependencies for mods installed from Thunderstore — so install
+R2API_Difficulty and R2API_Language from the Online tab first.
+
 `global.json` pins the .NET 8 SDK to match the MSBuild shipped with Visual Studio
 2022 17.10 and to keep `dotnet new sln` producing `.sln` rather than `.slnx`.
 

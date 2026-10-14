@@ -1,4 +1,5 @@
 using BepInEx;
+using R2API.Utils;
 
 namespace KarmaClimb
 {
@@ -7,13 +8,17 @@ namespace KarmaClimb
     /// a forced starting Karma of 1-8; levels 1-8 are forced to Karma disabled, so Karma is climbed
     /// exactly once across the ladder rather than twice.
     /// </summary>
+    // Every player needs this mod, on the same version: it adds difficulty choices and unlockables, and
+    // the game sends both over the network as indices, so a mismatch would silently desync the lobby.
+    // R2API turns this into the game's mod list check, which keeps mismatched players apart.
+    [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency(R2API.DifficultyAPI.PluginGUID)]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     public class KarmaClimbPlugin : BaseUnityPlugin
     {
-        public const string PluginAuthor = "priv-chen-pw";
+        public const string PluginAuthor = "chen-ror2";
         public const string PluginName = "KarmaClimb";
         public const string PluginGuid = PluginAuthor + "." + PluginName;
         public const string PluginVersion = "0.1.0";

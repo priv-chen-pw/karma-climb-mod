@@ -38,6 +38,31 @@
     <EmbeddedResource Include="Assets\Medals\*.png" LogicalName="KarmaClimb.Medals.%(Filename)%(Extension)" />
   </ItemGroup>
 
+  <!-- Release builds also produce the Thunderstore package: the five files flat at the zip root, as
+       Thunderstore and r2modman require (a zipped folder, or another archive format, is not read). -->
+  <Target Name="PackageThunderstore" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+    <PropertyGroup>
+      <RepoRoot>$(MSBuildProjectDirectory)\..\</RepoRoot>
+      <PackageStage>$(MSBuildProjectDirectory)\obj\thunderstore-package\</PackageStage>
+      <PackageZip>$(RepoRoot)artifacts\KarmaClimb-$(Version).zip</PackageZip>
+      <ManifestText>$([System.IO.File]::ReadAllText('$(RepoRoot)Thunderstore\manifest.json'))</ManifestText>
+      <ManifestVersion>$([System.Text.RegularExpressions.Regex]::Match($(ManifestText), '(?&lt;="version_number"\s*:\s*")[^"]+').Value)</ManifestVersion>
+      <PluginText>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\KarmaClimbPlugin.cs'))</PluginText>
+      <PluginVersion>$([System.Text.RegularExpressions.Regex]::Match($(PluginText), '(?&lt;=PluginVersion = ")[^"]+').Value)</PluginVersion>
+    </PropertyGroup>
+
+    <!-- Thunderstore refuses a version twice, so a mismatch here means a broken release. -->
+    <Error Condition="'$(ManifestVersion)' != '$(Version)'" Text="Thunderstore/manifest.json version_number ($(ManifestVersion)) does not match the project Version ($(Version))." />
+    <Error Condition="'$(PluginVersion)' != '$(Version)'" Text="KarmaClimbPlugin.PluginVersion ($(PluginVersion)) does not match the project Version ($(Version))." />
+
+    <RemoveDir Directories="$(PackageStage)" />
+    <Copy SourceFiles="$(TargetPath);$(RepoRoot)Thunderstore\manifest.json;$(RepoRoot)Thunderstore\icon.png;$(RepoRoot)README.md;$(RepoRoot)CHANGELOG.md"
+          DestinationFolder="$(PackageStage)" />
+    <MakeDir Directories="$(RepoRoot)artifacts" />
+    <ZipDirectory SourceDirectory="$(PackageStage)" DestinationFile="$(PackageZip)" Overwrite="true" />
+    <Message Importance="high" Text="Thunderstore package -> $(PackageZip)" />
+  </Target>
+
   <Target Name="DeployToProfile" AfterTargets="Build" Condition="Exists('$(Ror2DevProfile)')">
     <MakeDir Directories="$(Ror2DeployDir)" />
     <Copy SourceFiles="$(TargetPath);$(TargetDir)$(AssemblyName).pdb"
