@@ -4,3 +4,6 @@ obj/
 .vs/
 .idea/
 artifacts/
+
+# Local release tutorial, kept off GitHub
+HOW-TO-UPDATE.md

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+* Gold medals for Eclipse 9–16: like vanilla, a medal turns gold once every survivor has beaten that level.
+
 ## 1.0.0
 
 * First release.

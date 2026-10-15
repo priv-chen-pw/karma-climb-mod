@@ -7,7 +7,8 @@ namespace KarmaClimb
     /// <summary>
     /// Loads the Eclipse 9-16 medal art embedded in the assembly (generated from the vanilla Eclipse 8 medal).
     ///
-    /// Each level has two states, like the Karma icons: Active once earned, Inactive until then. The
+    /// Each level has three states, as vanilla Eclipse medals do: Inactive until earned, Active (Karma
+    /// blue) once earned with this survivor, and Complete (gold) once earned with every survivor. The
     /// Active sprite doubles as the difficulty icon shown in character select and the run HUD.
     /// </summary>
     internal static class KarmaClimbMedalArt
@@ -17,6 +18,8 @@ namespace KarmaClimb
         internal static Sprite Active(int eclipseLevel) => Load($"texKarmaClimbMedal{eclipseLevel}Active");
 
         internal static Sprite Inactive(int eclipseLevel) => Load($"texKarmaClimbMedal{eclipseLevel}Inactive");
+
+        internal static Sprite Complete(int eclipseLevel) => Load($"texKarmaClimbMedal{eclipseLevel}Complete");
 
         private static Sprite Load(string name)
         {

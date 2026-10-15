@@ -12,7 +12,7 @@ Climb all the way to **Eclipse 16**, where every new level after 8 adds a level 
   * Unlocked just like vanilla Eclipse: beat Eclipse 8 with a survivor to unlock Eclipse 9 for them, beat 9 to unlock 10, and so on.
 * **Eclipse 1–8 no longer include Karma**
 * **Eclipse menu**
-  * A second row of medals for Eclipse 9–16.<img width="884" height="203" alt="image" src="https://github.com/user-attachments/assets/2bdbb671-cdf9-46d9-84f7-f4a3433a9b4a" />
+  * A second row of medals for Eclipse 9–16: Karma blue once earned, and gold once every survivor has beaten that level, just like vanilla.<img width="884" height="203" alt="image" src="https://github.com/user-attachments/assets/2bdbb671-cdf9-46d9-84f7-f4a3433a9b4a" />
 
   * New **Karma** box: hover a Karma badge to see exactly what that level does to Mithrix.<img width="869" height="781" alt="image" src="https://github.com/user-attachments/assets/4931150c-29e5-4090-a037-be2a0041bb45" />
 

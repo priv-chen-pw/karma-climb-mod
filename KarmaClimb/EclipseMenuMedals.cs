@@ -9,9 +9,9 @@ namespace KarmaClimb
     ///
     /// Vanilla ships one <see cref="EclipseDifficultyMedalDisplay"/> object per level with a serialized
     /// <c>eclipseLevel</c>, so there are exactly eight and nothing grows the row. Each new medal is a clone
-    /// of the Eclipse 8 medal with its three state sprites swapped for our art (unearned shows the
-    /// Inactive medal, either earned state the Active one), so vanilla's own Refresh switches between
-    /// them exactly as it does for Eclipse 1-8.
+    /// of the Eclipse 8 medal with its three state sprites swapped for our art - Inactive until earned,
+    /// Active (Karma blue) once this survivor has it, Complete (gold) once every survivor has it - so
+    /// vanilla's own Refresh switches between them exactly as it does for Eclipse 1-8.
     /// </summary>
     internal static class EclipseMenuMedals
     {
@@ -87,8 +87,9 @@ namespace KarmaClimb
             {
                 Sprite active = KarmaClimbMedalArt.Active(level);
                 Sprite inactive = KarmaClimbMedalArt.Inactive(level);
+                Sprite complete = KarmaClimbMedalArt.Complete(level);
 
-                if (!active || !inactive)
+                if (!active || !inactive || !complete)
                 {
                     Log.Warning($"Missing medal art for Eclipse {level}; skipping its medal.");
                     continue;
@@ -101,7 +102,7 @@ namespace KarmaClimb
                 display.eclipseLevel = level;
                 display.unearnedSprite = inactive;
                 display.incompleteSprite = active;
-                display.completeSprite = active;
+                display.completeSprite = complete;
 
                 if (display.iconImage)
                 {

@@ -1,6 +1,6 @@
 {
   "name": "KarmaClimb",
-  "version_number": "1.0.0",
+  "version_number": "1.1.0",
   "website_url": "https://github.com/priv-chen-pw/karma-climb-mod",
   "description": "Eclipse goes up to 16! Eclipse 9-16 keep every Eclipse 8 modifier and add Mithrix's Karma 1-8, locked for the whole run. Adds new medals and a Karma guide to the Eclipse menu.",
   "dependencies": [
