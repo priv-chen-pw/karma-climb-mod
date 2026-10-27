@@ -6,7 +6,9 @@ How the mod is built and how it works. The player-facing description is in the
 Karma Climb extends vanilla Eclipse from 8 levels to 16. Levels 9-16 carry the full Eclipse 8
 modifier set plus a Karma level of 1-8 that is locked for the whole run (Karma triggers grant nothing
 during Eclipse). Levels 1-8 force Karma **disabled**, so Karma is climbed once across the ladder instead
-of twice (vanilla forces Karma = Eclipse level on 1-8).
+of twice (vanilla forces Karma = Eclipse level on 1-8). On top of Mithrix's vanilla Karma, each level adds
+run-wide effects (see the README table); they only apply during Eclipse, so vanilla's own Karma mode is
+untouched.
 
 ## Environment this is built against
 
@@ -16,7 +18,7 @@ of twice (vanilla forces Karma = Eclipse level on 1-8).
 | `RiskOfRain2.GameLibs` | `1.5.0-r.1` (verified type-for-type against the local install) |
 | `MMHOOK.RoR2` | `2026.10.8` |
 | BepInEx | 5.4.21 |
-| R2API | Core 5.3.0 |
+| R2API | Core 5.3.0, Difficulty 1.1.2, Language 1.1.0, ContentManagement 1.1.0, Elites 1.1.3, RecalculateStats 1.6.6 |
 | Dev profile | r2modman profile `KarmaModDev` |
 
 ## Building
@@ -43,7 +45,7 @@ Thunderstore never accepts the same version twice. Bump all three together.
 
 Importing that zip into r2modman (Settings → Import local mod) installs the mod but **not** its
 dependencies — r2modman only resolves dependencies for mods installed from Thunderstore — so install
-R2API_Difficulty and R2API_Language from the Online tab first.
+the R2API modules listed in the manifest from the Online tab first.
 
 `global.json` pins the .NET 8 SDK to match the MSBuild shipped with Visual Studio
 2022 17.10 and to keep `dotnet new sln` producing `.sln` rather than `.slnx`.
@@ -60,6 +62,11 @@ with `preferPositive: true` appends exactly there.
 | [KarmaClimbLadder.cs](../KarmaClimb/KarmaClimbLadder.cs) | Ladder shape and token naming, in one place |
 | [KarmaClimbDifficulties.cs](../KarmaClimb/KarmaClimbDifficulties.cs) | Registers the 8 difficulties, owns level ⇄ `DifficultyIndex` |
 | [EclipseKarmaLock.cs](../KarmaClimb/EclipseKarmaLock.cs) | Locks Karma at its starting level for the whole Eclipse run |
+| [KarmaRun.cs](../KarmaClimb/KarmaRun.cs) | Eclipse-only Karma level and the final boss body list every effect checks |
+| [KarmaStatEffects.cs](../KarmaClimb/KarmaStatEffects.cs) | Enemy damage, attack speed and final boss health; swaps out Mithrix's vanilla damage and attack speed |
+| [KarmaBossShell.cs](../KarmaClimb/KarmaBossShell.cs) | Karma 4 final boss shell, built on vanilla's `BrotherSuperArmorController` |
+| [KarmaDirectorEffects.cs](../KarmaClimb/KarmaDirectorEffects.cs) | Kill gold, the teleporter's Shrine of the Mountain stack, monster and interactable credits |
+| [KarmaEliteEffects.cs](../KarmaClimb/KarmaEliteEffects.cs) | Voidtouched/Perfected elite tier, and the final boss aspect roll |
 | [KarmaClimbUnlockables.cs](../KarmaClimb/KarmaClimbUnlockables.cs) | Injects `Eclipse.<survivor>.9`-`.16`, cloned from each survivor's level-8 def |
 | [EclipseLadderHooks.cs](../KarmaClimb/EclipseLadderHooks.cs) | Bridges vanilla's name-based rule lookups to R2API's indices |
 | [KarmaClimbLanguage.cs](../KarmaClimb/KarmaClimbLanguage.cs) | Tokens matching vanilla `Eclipse.json` wording |

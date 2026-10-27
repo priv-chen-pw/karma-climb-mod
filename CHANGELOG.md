@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.0.0
+
+* Karma now reaches the whole run, not just Mithrix: stronger enemies, a Shrine of the Mountain stack on every teleporter, a damage shell and more health for final bosses, Voidtouched and Perfected elites on every stage, elite final bosses at Karma 8, and more kill gold and interactables to balance it.
+* Mithrix's damage and attack speed now use the all-enemy Karma bonuses instead of his vanilla ones.
+* Karma tooltips list the general effects first, then Mithrix's changes.
+* New dependencies: R2API_ContentManagement, R2API_Elites, R2API_RecalculateStats.
+
 ## 1.1.0
 
 * Gold medals for Eclipse 9–16: like vanilla, a medal turns gold once every survivor has beaten that level.

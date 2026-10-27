@@ -15,13 +15,16 @@ namespace KarmaClimb
     [BepInDependency(R2API.R2API.PluginGUID)]
     [BepInDependency(R2API.DifficultyAPI.PluginGUID)]
     [BepInDependency(R2API.LanguageAPI.PluginGUID)]
+    [BepInDependency(R2API.ContentManagement.R2APIContentManager.PluginGUID)]
+    [BepInDependency(R2API.EliteAPI.PluginGUID)]
+    [BepInDependency(R2API.RecalculateStatsAPI.PluginGUID)]
     [BepInPlugin(PluginGuid, PluginName, PluginVersion)]
     public class KarmaClimbPlugin : BaseUnityPlugin
     {
         public const string PluginAuthor = "chen-ror2";
         public const string PluginName = "KarmaClimb";
         public const string PluginGuid = PluginAuthor + "." + PluginName;
-        public const string PluginVersion = "1.1.0";
+        public const string PluginVersion = "2.0.0";
 
         public void Awake()
         {
@@ -36,6 +39,13 @@ namespace KarmaClimb
             KarmaClimbUnlockables.Init();
             EclipseLadderHooks.Init();
             EclipseKarmaLock.Init();
+
+            // What each Karma level does during the run.
+            KarmaRun.Init();
+            KarmaStatEffects.Init();
+            KarmaBossShell.Init();
+            KarmaDirectorEffects.Init();
+            KarmaEliteEffects.Init();
 
             // Eclipse menu presentation.
             EclipseMenuMedals.Init();
